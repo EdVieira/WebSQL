@@ -1,0 +1,141 @@
+<!DOCTYPE HTML> 
+<!--
+MIT License
+
+Copyright (c) 2020 Eduardo Henrique Vieira dos Santos
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+<html>
+	<head> 
+	<script type="text/javascript" src="js/edwebsql.js"></script>
+	<script type = "text/javascript">
+
+		var mws = new MyWebSql(db='mydb', version='1.0', title='TestDB', size=2*1024*1024);
+		var reee;
+
+		function printTable(res){
+				let len = res.length;
+				console.log(len);
+				msg = "<p>Found rows: " + len + "</p>"; 
+				document.querySelector('#status').innerHTML +=msg; 
+
+				msg = '<table border="1px solid black">';
+				msg += "<thead>";
+				for (var key in res[0]) {
+					msg += '<th>';
+					msg += String(key);
+					msg += '</th>';
+				}
+				msg += "</thead>";
+				msg += "<tbody>";
+				for (let i = 0; i < len; i++) { 
+					console.log(i);
+					msg += '<tr>';
+					for (var key in res[i]) {
+					console.log(key, res[i][key]);
+					msg += '<td>';
+					msg += String(res[i][key]);
+					msg += '</td>';
+					} 
+					msg += '</tr>';
+				console.log(res[i]);
+				} 
+				msg += "</tbody>";
+				msg += "</table>";
+				document.querySelector('#status').innerHTML =msg+document.querySelector('#status').innerHTML;
+		};
+		function createTable(){
+			var table = document.getElementById("table").value;
+			var columns = document.getElementById("column").value;
+			mws.createTable(table, columns);
+		}
+
+		function dropTable(){
+			var table = document.getElementById("table").value;
+			mws.dropTable(table);
+		}
+
+		function insertDb(){
+			var table = document.getElementById("table").value;
+			var columns = document.getElementById("columns").value.split(",");
+			var values = document.getElementById("values").value.split(",");
+			mws.dbInsert(table, columns, values);
+		}
+
+		function updateDb(){
+			var table = document.getElementById("table").value;
+			var columns = document.getElementById("columns").value.split(",");
+			var values = document.getElementById("values").value.split(",");
+			var where = document.getElementById("where").value;
+			mws.dbUpdate(table, columns, values, where);
+		}
+
+		function selectDb(){
+			var table = document.getElementById("table").value;
+			var columns = document.getElementById("columns").value;
+			var where = document.getElementById("where").value;
+			reee = mws.dbSelect(table, columns, where);
+		}
+
+		function deleteDb(){
+			var table = document.getElementById("table").value;
+			var where = document.getElementById("where").value;
+			mws.dbDelete(table, where);
+		}
+
+	</script> 
+	</head> 
+
+	<body> 
+		<h1>WEB SQL</h1>
+		<br />
+
+		<h3>DDL</h3>
+		<label for="table">Table</label>
+		<input type="text" id="table" value="DOGS">
+		<br />
+		<label for="column">Columns (csv)</label>
+		<input type="text" id="column" value="name,type">
+		<br />
+		<button onclick='createTable();'>Create Table</button>
+		<button onclick='dropTable();'>Drop Table</button>
+		<hr>
+
+		<h3>DML</h3>
+		<label for="columns">Columns (csv)</label>
+		<input type="text" id="columns" value="id,name,type" placeholder="* / column1, column2, column3">
+		<br />
+		<label for="values"> Insert/update -> Values (csv)</label>
+		<input type="text" id="values" value="1,Toby,dog" placeholder="value1, value2, value3">
+		<br />
+		<label for="where">Where (condition:string)</label>
+		<input type="text" id="where" value="" placeholder="id=1">
+		<br />
+
+		<button onclick='insertDb();'>Insert</button>
+		<button onclick='updateDb();'>Update</button>
+		<button onclick='selectDb();'>Select</button>
+		<button onclick='deleteDb();'>Delete</button>
+			<br />
+			<button onclick='printTable(reee)'>Print Table</button>
+
+		<div id = "status" name = "status">Status Message</div> 
+	</body> 
+</html>
